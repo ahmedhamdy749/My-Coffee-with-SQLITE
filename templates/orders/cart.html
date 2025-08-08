@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} | CART {% endblock %}
+
+
+{% block content %}
+<div class="my-form container p-5 my-5 rounded border border-warning">
+    <h2 class="text-center">Cart</h2>
+        <hr>
+        {% if not request.user.is_authenticated and request.user.is_anonymous %}
+        <h5 class="alert alert-warning">
+          You must be 
+          <a href="{% url 'signin' %}" class="text-dark">Log in</a>
+        </h5>
+        {% elif order %}
+        <h5>
+            Full Name : <span class="my-number">{{ order.user.first_name |add:' '|add:order.user.last_name}}</span>
+            <a href="{% url 'products' %}" class="btn btn-outline-warning float-right m-1">Continuo shopping</a>
+            <a href="{% url 'payment' %}" class="btn btn-secondary float-right m-1">Checkout</a>
+
+
+            <hr>
+            Order Number: <span class="my-number">{{order.id}}</span>
+            
+            With Total: <span class="my-number">{{total}}</span>$
+            
+            For <span class="my-number">{{orderdetails.count}}</span> Products
+        </h5>
+
+
+
+
+        <table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Product</th>
+      <th scope="col">Image</th>
+      <th scope="col">Quantity</th>
+      <th scope="col">Price</th>
+      <th scope="col">Sub Total</th>
+      <td>Control</td>
+    </tr>
+  </thead>
+  <tbody>
+    {% for line in orderdetails %}
+    <tr>
+      <th scope="row">{{ forloop.counter }}</th>
+      <td>{{line.product.name}}</td>
+      <td><img style="width: 80px; hight:80px" src="{{line.product.photo.url}}" alt=""></td>
+      <td>
+        <a href="{% url 'sub_qty' orderdetails_id=line.id %}" class="btn btn-outline-warning sm">-</a>
+        {{line.quantity}}
+        <a href="{% url 'add_qty' orderdetails_id=line.id %}" class="btn btn-outline-warning sm">+</a>
+      </td>
+      <td>{{line.price}}</td>
+      <td style="font-weight: bold;color:darkred;">{% widthratio line.quantity 1 line.price %}</td>
+      <td>
+        <a href="{% url 'remove_from_cart' orderdetails_id=line.id %}" class="btn btn-outline-danger btn-sm">Remove</a>
+      </td>
+      {% empty %}
+      <h5 class="alert alert-warning">No Details Here</h5>
+
+      {% endfor %}
+
+  </tbody>
+</table>
+
+
+
+
+        {% else %}
+        <h5 class="alert alert-warning">No Oreders Here</h5>
+        {% endif %}
+
+         <hr>
+
+
+
+</div>
+
+
+
+
+
+{% endblock %}
